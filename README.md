@@ -1,90 +1,123 @@
-Personal Expense Tracker 📱
-A simple yet powerful Android application to track your personal expenses.
+💰 Personal Expense Tracker
 
-Features ✨
-Add Expense: Easily add your expenses with amount, category, date, and a note.
+A simple yet powerful Android application to manage and track your personal expenses efficiently.
+Built with Kotlin and Jetpack Compose, it offers a clean UI, smooth experience, and full offline functionality.
 
-View Expenses: See a list of all your expenses, sorted by date.
+✨ Features
 
-Update Expense: Edit your existing expenses.
+✅ Add Expense — Record expenses with amount, category, date, and note.
+📋 View Expenses — See a detailed list of all your expenses sorted by date.
+✏️ Update Expense — Edit or modify existing expense entries.
+🗑️ Delete Expense — Remove expenses you no longer need.
+🏷️ Categorization — Organize your spending by categories (e.g., Food, Travel, Bills).
+📊 Dashboard Overview — Get insights into total spending and category-wise breakdown.
+💾 Data Persistence — Data is securely stored locally using Room Database.
+🎨 Modern UI — Clean and responsive interface built with Jetpack Compose and Material Design 3.
 
-Delete Expense: Remove expenses you no longer need.
+🧠 Technologies Used
+Technology	Purpose
+Kotlin	Main programming language
+Jetpack Compose	Declarative UI toolkit
+Room Database	Local storage solution
+ViewModel (MVVM)	Manage and observe UI data
+Coroutines	Asynchronous programming
+Material Design 3	Modern and aesthetic design system
+🧱 Architecture
 
-Categorization: Categorize your expenses for better organization (e.g., Food, Travel, Bills).
+This app follows the MVVM (Model–View–ViewModel) architecture for scalability and clean separation of concerns.
 
-Dashboard: Get a quick overview of your total expenses and spending by category.
+Model → Defines data and database interactions.
 
-Data Persistence: Your data is saved locally on your device using a Room database.
+ViewModel → Manages UI-related data and business logic.
 
-User-Friendly Interface: A clean and intuitive UI built with Jetpack Compose.
+View (UI) → Displays data reactively using Jetpack Compose.
 
-Technologies Used 💻
-Kotlin: The primary programming language for building the application.
-
-Jetpack Compose: For building the user interface.
-
-Room Database: For local data storage.
-
-ViewModel: To manage UI-related data in a lifecycle-conscious way.
-
-Coroutines: For asynchronous programming.
-
-Material Design 3: For the application's design system.
-
-How to Run 🚀
-Clone the repository:
-
-Bash
-
+🚀 How to Run
+1️⃣ Clone the Repository
 git clone https://github.com/snehil208001/expensetrackerassignment.git
-Open in Android Studio:
 
-Open Android Studio and select "Open an Existing Project".
+2️⃣ Open in Android Studio
 
-Navigate to the cloned repository and open it.
+Launch Android Studio
 
-Build and Run:
+Select “Open an Existing Project”
 
-Let Android Studio sync the project and download the required dependencies.
+Choose the cloned project folder
 
-Run the application on an emulator or a physical device.
+3️⃣ Build & Run
 
-Assumptions and Design ✍️
-Simplicity: The application is designed to be simple and easy to use, focusing on the core functionalities of an expense tracker.
+Let Gradle sync automatically
 
-Local Storage: All data is stored locally on the device, ensuring privacy and offline access.
+Run the app on an emulator or your physical Android device
 
-Modern UI: The UI is built with Jetpack Compose, providing a modern and reactive user experience.
+🧩 Sample Inputs & Outputs
+➕ Adding an Expense
 
-MVVM Architecture: The application follows the MVVM (Model-View-ViewModel) architecture for a clean and scalable codebase.
-
-Sample Inputs and Outputs 📝
-Adding an Expense
 Input:
 
 Amount: 500
-
 Category: Food
-
 Note: Lunch with friends
+Date: 04 Oct 2025
+
 
 Output:
+A new expense is added showing:
 
-A new expense is added to the list with the specified details.
+🧾 500 – Food – Lunch with friends – 04 Oct 2025
 
-Viewing Expenses
-Output:
+📄 Viewing Expenses
 
-A list of all expenses, with each expense showing the amount, category, date, and note.
+Output Example:
 
-Viewing the Dashboard
-Output:
+Amount	Category	Date	Note
+₹500	Food	04 Oct 2025	Lunch with friends
+₹250	Travel	03 Oct 2025	Cab fare
+📊 Dashboard
 
-The total amount of all expenses.
+Output Example:
 
-A breakdown of expenses by category, showing the total amount spent in each category.
+Total Spent: ₹750
+Food: ₹500
+Travel: ₹250
 
-Deliverables deliverables
-APK: [Link to APK on Google Drive]
+🎯 Design & Assumptions
 
-Screen Recording: [Link to Screen Recording on Google Drive]
+🧩 Simplicity First: Focused only on essential expense-tracking features.
+
+🔐 Local Storage: All data stays on the device — no internet required.
+
+🎨 Modern Look: Designed with Material Design 3 components.
+
+🏗️ MVVM Architecture: Promotes code reusability and scalability.
+
+📦 Deliverables
+
+📱 APK File: Download APK from Google Drive
+
+🎥 Screen Recording: Watch Demo on Google Drive
+
+💻 Source Code: GitHub Repository
+
+📨 Submission Details
+
+Assignment Title: Personal Expense Tracker
+Submitted To: Evaao (contact@evaao.com
+)
+Submitted By: Snehil Kumar
+Deadline: 🗓 October 5, 2025, 11:59 PM IST
+
+💡 Future Enhancements (Optional Ideas)
+
+🔍 Add filters by date range or category
+
+📅 Monthly analytics reports
+
+☁️ Cloud backup & sync
+
+🔔 Spending alerts and reminders
+
+🏁 Conclusion
+
+“Track your spending. Understand your habits.
+Build better financial discipline — one expense at a time.”
