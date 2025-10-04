@@ -104,8 +104,8 @@ Travel: ₹250
 Assignment Title: Personal Expense Tracker
 Submitted To: Evaao (contact@evaao.com
 )
-Submitted By: Snehil Kumar
-Deadline: 🗓 October 5, 2025, 11:59 PM IST
+Submitted By: Snehil 
+Deadline: 🗓 October 4, 2025, 12:03 PM IST
 
 💡 Future Enhancements (Optional Ideas)
 
