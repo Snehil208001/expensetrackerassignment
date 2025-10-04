@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,11 +23,11 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseScreen(viewModel: ExpenseViewModel) {
-    // Observe state from the ViewModel. The UI will automatically recompose when these change.
     val expenses by viewModel.allExpenses.collectAsState()
-    val showDialog by remember { mutableStateOf(false) } // This state will be managed within the screen for simplicity
+    var showAddDialog by remember { mutableStateOf(false) }
+    var showEditDialog by remember { mutableStateOf(false) }
+    var selectedExpense by remember { mutableStateOf<Expense?>(null) }
 
-    // Main screen layout using Scaffold
     Scaffold(
         topBar = {
             TopAppBar(
@@ -38,23 +39,25 @@ fun ExpenseScreen(viewModel: ExpenseViewModel) {
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { /* We need to show the dialog */ }) {
+            FloatingActionButton(onClick = { showAddDialog = true }) {
                 Icon(Icons.Default.Add, contentDescription = "Add Expense")
             }
         }
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-            // Show a message if the list of expenses is empty
             if (expenses.isEmpty()) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Text("No expenses yet. Tap '+' to add one!")
                 }
             } else {
-                // Display the list of expenses using LazyColumn for performance
                 LazyColumn(contentPadding = PaddingValues(8.dp)) {
                     items(expenses) { expense ->
                         ExpenseListItem(
                             expense = expense,
+                            onEdit = {
+                                selectedExpense = it
+                                showEditDialog = true
+                            },
                             onDelete = { viewModel.deleteExpense(it) }
                         )
                     }
@@ -62,10 +65,31 @@ fun ExpenseScreen(viewModel: ExpenseViewModel) {
             }
         }
     }
+
+    if (showAddDialog) {
+        AddExpenseDialog(
+            onDismiss = { showAddDialog = false },
+            onConfirm = {
+                viewModel.addExpense(it)
+                showAddDialog = false
+            }
+        )
+    }
+
+    if (showEditDialog) {
+        EditExpenseDialog(
+            expense = selectedExpense!!,
+            onDismiss = { showEditDialog = false },
+            onConfirm = {
+                viewModel.updateExpense(it)
+                showEditDialog = false
+            }
+        )
+    }
 }
 
 @Composable
-fun ExpenseListItem(expense: Expense, onDelete: (Expense) -> Unit) {
+fun ExpenseListItem(expense: Expense, onEdit: (Expense) -> Unit, onDelete: (Expense) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -85,11 +109,14 @@ fun ExpenseListItem(expense: Expense, onDelete: (Expense) -> Unit) {
                 Text(expense.date, fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
             }
             Text(
-                text = "$%.2f".format(expense.amount),
+                text = "₹%.2f".format(expense.amount),
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
                 color = MaterialTheme.colorScheme.primary
             )
+            IconButton(onClick = { onEdit(expense) }) {
+                Icon(Icons.Default.Edit, contentDescription = "Edit Expense")
+            }
             IconButton(onClick = { onDelete(expense) }) {
                 Icon(Icons.Default.Delete, contentDescription = "Delete Expense", tint = MaterialTheme.colorScheme.error)
             }
@@ -97,6 +124,7 @@ fun ExpenseListItem(expense: Expense, onDelete: (Expense) -> Unit) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddExpenseDialog(onDismiss: () -> Unit, onConfirm: (Expense) -> Unit) {
     var amount by remember { mutableStateOf("") }
@@ -104,6 +132,11 @@ fun AddExpenseDialog(onDismiss: () -> Unit, onConfirm: (Expense) -> Unit) {
     var note by remember { mutableStateOf("") }
     var amountError by remember { mutableStateOf<String?>(null) }
     var categoryError by remember { mutableStateOf<String?>(null) }
+    val categories = listOf(
+        "Food", "Travel", "Bills", "Groceries", "Entertainment",
+        "Shopping", "Health", "Education", "Gifts", "Other"
+    )
+    var expanded by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -114,7 +147,7 @@ fun AddExpenseDialog(onDismiss: () -> Unit, onConfirm: (Expense) -> Unit) {
                     value = amount,
                     onValueChange = {
                         amount = it
-                        amountError = null // Clear error when user types
+                        amountError = null
                     },
                     label = { Text("Amount") },
                     isError = amountError != null,
@@ -124,16 +157,36 @@ fun AddExpenseDialog(onDismiss: () -> Unit, onConfirm: (Expense) -> Unit) {
                     Text(amountError!!, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = category,
-                    onValueChange = {
-                        category = it
-                        categoryError = null // Clear error when user types
-                    },
-                    label = { Text("Category (e.g., Food, Travel)") },
-                    isError = categoryError != null,
-                    singleLine = true
-                )
+
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
+                ) {
+                    TextField(
+                        modifier = Modifier.menuAnchor(),
+                        readOnly = true,
+                        value = category,
+                        onValueChange = {},
+                        label = { Text("Category") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                    ) {
+                        categories.forEach { selectionOption ->
+                            DropdownMenuItem(
+                                text = { Text(selectionOption) },
+                                onClick = {
+                                    category = selectionOption
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
                 if (categoryError != null) {
                     Text(categoryError!!, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
                 }
@@ -148,7 +201,6 @@ fun AddExpenseDialog(onDismiss: () -> Unit, onConfirm: (Expense) -> Unit) {
         confirmButton = {
             Button(onClick = {
                 val amountDouble = amount.toDoubleOrNull()
-                // --- Basic Validation ---
                 if (amountDouble == null || amountDouble <= 0) {
                     amountError = "Enter a valid amount"
                 } else if (category.isBlank()) {
@@ -162,6 +214,107 @@ fun AddExpenseDialog(onDismiss: () -> Unit, onConfirm: (Expense) -> Unit) {
                         date = currentDate
                     )
                     onConfirm(newExpense)
+                }
+            }) {
+                Text("Confirm")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditExpenseDialog(expense: Expense, onDismiss: () -> Unit, onConfirm: (Expense) -> Unit) {
+    var amount by remember { mutableStateOf(expense.amount.toString()) }
+    var category by remember { mutableStateOf(expense.category) }
+    var note by remember { mutableStateOf(expense.note) }
+    var amountError by remember { mutableStateOf<String?>(null) }
+    var categoryError by remember { mutableStateOf<String?>(null) }
+    val categories = listOf(
+        "Food", "Travel", "Bills", "Groceries", "Entertainment",
+        "Shopping", "Health", "Education", "Gifts", "Other"
+    )
+    var expanded by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Edit Expense") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = amount,
+                    onValueChange = {
+                        amount = it
+                        amountError = null
+                    },
+                    label = { Text("Amount") },
+                    isError = amountError != null,
+                    singleLine = true
+                )
+                if (amountError != null) {
+                    Text(amountError!!, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded },
+                ) {
+                    TextField(
+                        modifier = Modifier.menuAnchor(),
+                        readOnly = true,
+                        value = category,
+                        onValueChange = {},
+                        label = { Text("Category") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                    ) {
+                        categories.forEach { selectionOption ->
+                            DropdownMenuItem(
+                                text = { Text(selectionOption) },
+                                onClick = {
+                                    category = selectionOption
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                if (categoryError != null) {
+                    Text(categoryError!!, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = note,
+                    onValueChange = { note = it },
+                    label = { Text("Note") }
+                )
+            }
+        },
+        confirmButton = {
+            Button(onClick = {
+                val amountDouble = amount.toDoubleOrNull()
+                if (amountDouble == null || amountDouble <= 0) {
+                    amountError = "Enter a valid amount"
+                } else if (category.isBlank()) {
+                    categoryError = "Category cannot be empty"
+                } else {
+                    val updatedExpense = expense.copy(
+                        amount = amountDouble,
+                        category = category.trim(),
+                        note = note.trim()
+                    )
+                    onConfirm(updatedExpense)
                 }
             }) {
                 Text("Confirm")
