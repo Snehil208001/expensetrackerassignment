@@ -93,9 +93,9 @@ Travel: ₹250
 
 📦 Deliverables
 
-📱 APK File: Download APK from Google Drive
+📱 APK File: Download APK from Google Drive[https://drive.google.com/file/d/13hF4I3DGChNoAx25tpXnXqPMRKGaNwXr/view?usp=sharing]
 
-🎥 Screen Recording: Watch Demo on Google Drive
+🎥 Screen Recording: Watch Demo on Google Drive[https://drive.google.com/file/d/1FPOZb-PQOrTy5GbFBEQSWZ12VzJwHzab/view?usp=sharing]
 
 💻 Source Code: GitHub Repository
 
